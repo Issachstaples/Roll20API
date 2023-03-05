@@ -9,6 +9,19 @@ on("chat:message", function (msg) {
 	if (command === "!spellRoll") spellRoll.Process(msg);
 });
 
+spellRoll.Process = function(msg, who){
+	msg = processInlineRolls(msg)
+    let i = msg.split(" ");
+    let character = getObj(graphic, i[1]);
+    let characterId = character.get("represents");
+    let diceRoll = ParseInt(i[2], 10);
+    let rollModifier = ParseInt(i[3], 10);
+    let spellWasCast = ParseInt(i[4], 10);
+    /* i[1] is our player's token, i[2] is our spell roll, i[3] is our spell burn i[4] has to be our spell name written withour spaces*/
+    let totalRoll = diceRoll + rollModifier;
+    //sendChat("character|"+characterId, "I cast my spell and roll" +i[2]+ "I willingliy spellburn" +i[3]+ "for a total roll of" +totalRoll);
+    /* now find the spell that was cast spellWasCast and compare it to our Spells */
+}
 /* end of spells from core rules */
 /*fuction for inline rolls processing in msg */
 function processInlinerolls(msg) {
@@ -25,19 +38,6 @@ function processInlinerolls(msg) {
     } else {
         return msg.content;
     }
-}
-spellRoll.Process = function(msg, who);{
-	msg = ProcessInlineRolls(msg)
-    let i = msg.split(" ");
-    let character = getObj(graphic, i[1]);
-    let characterId = character.get("represents");
-    let diceRoll = ParseInt(i[2], 10);
-    let rollModifier = ParseInt(i[3], 10);
-    let spellWasCast = ParseInt(i[4], 10);
-    /* i[1] is our player's token, i[2] is our spell roll, i[3] is our spell burn i[4] has to be our spell name written withour spaces*/
-    let totalRoll = diceRoll + rollModifier;
-    //sendChat("character|"+characterId, "I cast my spell and roll" +i[2]+ "I willingliy spellburn" +i[3]+ "for a total roll of" +totalRoll);
-    /* now find the spell that was cast spellWasCast and compare it to our Spells */
 }   
 /*let msg;
 let i[1, 2, 3, 4];
@@ -49,7 +49,7 @@ let spellWasCast;
 let totalRoll; */
 
 function range(x, min, max) {
-    return x >= min && x> max+1;
+    return x-1 > min && x> max+1;
 }
 
 const animalSummoning = {
@@ -94,6 +94,7 @@ const cantrip = {
     "range28to30": "The caster can create any Three effects from Visual, Auditory, Kinetic, and energy and combine them into a combined effect at a range of up to 20 feet per caster level.",
 
 }
+let resultOutput = ["error", "error", "error"];
 function castAnimalSummoning(){
   let x = totalRoll;
      if (x = 1){let resultOutput = [animalSummoning.Name, "n/a", animalSummoning.range1];}
@@ -105,5 +106,13 @@ function castAnimalSummoning(){
      if (range(x, 24, 27)){let resultOutput = [animalSummoning.Name, animalSummoning.Manifest, animalSummoning.range24to27];}
      if (range(x, 28, 29)){let resultOutput = [animalSummoning.Name, animalSummoning.Manifest, animalSummoning.range28to29];}
      if (range(x, 30, 31)){let resultOutput = [animalSummoning.Name, animalSummoning.Manifest, animalSummoning.range30to31];}
-     if (x >= 32){ let resultOutput = [animalSummoning.Name, animalSummoning.Manifest, animalSummoning.range32plus];}
+     if (x >= 32){let resultOutput = [animalSummoning.Name, animalSummoning.Manifest, animalSummoning.range32plus];}
 }
+//function = castCharmPerson(){}
+//function = castCantrip(){}
+
+// check spell
+if (spellWasCast = "animalSummoning"){castAnimalSummoning();}
+// send chats
+//sendChat("character|"+characterId, "I cast my spell " +resultOutput.pop(0)+ "and roll" +i[2]+ "I willingliy spellburn" +i[3]+ "for a total roll of" +totalRoll +resultOutput.pop(1)+ " " +resultOutput.pop(2));
+sendChat("character|"+characterId, `I cast my spell ${resultOutput.pop(0)} and roll ${i[2]} I willingly spellburn ${i[3]} for a total of ${totalRoll}.`);
